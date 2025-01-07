@@ -1,35 +1,39 @@
 import { AccountService } from '../services/account.service';
-import { Controller, Post, Body, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
-import { AccountRequestDto, AccountResponseDto, AccountSearchParamsDto } from '../dto/account.dto';
+import { Controller, Post, Body, Query, Get, Param } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags, ApiQuery, ApiParam, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { PaginationDto } from 'src/dto/pagination.dto';
+import axios from 'axios';
+import { AccountDto } from 'src/dto/account.dto';
 
 @ApiTags('Accounts')
 @Controller()
 export class AccountController {
-  constructor(private readonly accountService: AccountService) {}
+ constructor(private readonly accountService: AccountService) {}
 
-  @Post('/accounts/get-all')
-  @ApiOperation({ 
-    summary: 'Get all accounts', 
-    description: 'Retrieves all accounts based on the provided criteria with optional email and bcId filters' 
-  })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved accounts', type: AccountResponseDto })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
-  @ApiQuery({ 
-    name: 'email', 
-    required: false, 
-    description: 'Filter accounts by email' 
-  })
-  @ApiQuery({ 
-    name: 'bcId', 
-    required: false, 
-    description: 'Filter accounts by business center ID' 
-  })
-  async getAllAccounts(
-    @Body() accountData: AccountRequestDto,
-    @Query() searchParams: AccountSearchParamsDto
-  ) {
-    return await this.accountService.getAllAccounts(accountData, searchParams);
-  }
+ @Get('/initialize')
+ @ApiExcludeEndpoint()
+
+ @Get('/accounts/:accountId')
+ @ApiOperation({ summary: 'Get account by ID' })
+ @ApiParam({ name: 'accountId', type: 'number' })
+ async getAccountById(@Param('accountId') accountId: number) {
+   return await this.accountService.findByAccountId(accountId);
+ }
+
+ @Get('/accounts')
+ @ApiOperation({ summary: 'Get all accounts' })
+ async getAllAccounts() {
+   return await this.accountService.getAllAccounts();
+ }
+
+ @Post('/accounts')
+@ApiOperation({ summary: 'Create new account' })
+async createAccount(@Body() accountDto: AccountDto) {
+  return await this.accountService.createAccount(accountDto);
+}
+@Get('/accounts/names')
+@ApiOperation({ summary: 'Get all account names' })
+async getAccountNames() {
+ return await this.accountService.getAccountNames();
+}
 }

@@ -4,10 +4,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { GlobalExceptionFilter } from './filters/http-exception.filter';
 import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
+import { AccountController } from './controllers/account.controller';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+  app.enableCors();
+  console.log('Available routes:', app.getHttpServer()._events.request._router.stack
+.filter(layer => layer.route)
+.map(layer=> layer.route?.path));
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({ 
     transform: true,
@@ -32,6 +36,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  const accountController = app.get(AccountController); 
   await app.listen(3000);
 }
 bootstrap();

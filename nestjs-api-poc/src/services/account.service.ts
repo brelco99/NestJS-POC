@@ -1,56 +1,51 @@
-import { Injectable, HttpException, Logger } from '@nestjs/common';
+import { Injectable, HttpException, Logger, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios'
-import { AccountRequestDto, AccountSearchParamsDto } from '../dto/account.dto';
 import { firstValueFrom } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Account } from 'src/entities/account.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationDto } from 'src/dto/pagination.dto';
+import { AccountDto } from 'src/dto/account.dto';
+
 
 @Injectable()
 export class AccountService {
-  private readonly logger = new Logger(AccountService.name);
-  
-  constructor(private readonly httpService: HttpService) {}
+ constructor(
+   @InjectRepository(Account)
+   private accountRepository: Repository<Account>
+ ) {}
 
-  async getAllAccounts(accountData: AccountRequestDto, searchParams?: AccountSearchParamsDto) {
-    try {
-      this.logger.log(`Fetching accounts with search params: ${JSON.stringify(searchParams)}`);
-      
-      const requestBody = {
-        ...accountData,
-        ...(searchParams?.email && { searchEmail: searchParams.email }),
-        ...(searchParams?.bcId && { searchBcId: searchParams.bcId })
-      };
+ async storeAccounts(accounts: any[]) {
+   for (const account of accounts) {
+     await this.accountRepository.save({
+       firestoreId: account.id,
+       name: account.name
+     });
+   }
+ }
 
-      this.logger.debug(`Making request with body: ${JSON.stringify(requestBody)}`);
+ async findByAccountId(accountId: number) {
+   return await this.accountRepository.findOne({
+     where: { accountId }
+   });
+ }
 
-      const response = await firstValueFrom(
-        this.httpService.post(
-          'https://localhost:3000', // Replace with your actual API URL
-          requestBody,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        ).pipe(
-          catchError((error) => {
-            this.logger.error(`Error fetching accounts: ${error.message}`, error.stack);
-            if (error.response) {
-              throw new HttpException(
-                {
-                  status: error.response.status,
-                  error: error.response.data,
-                },
-                error.response.status,
-              );
-            }
-            throw error;
-          }),
-        )
-      );
-      this.logger.log(`Successfully fetched accounts`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  }
+ async getAllAccounts() {
+   return await this.accountRepository.find();
+ }
+
+ async createAccount(accountDto: AccountDto) {
+  const account = this.accountRepository.create({
+    firestoreId: accountDto.firestoreId,
+    name: accountDto.name
+  });
+  return await this.accountRepository.save(account);
+ }
+ 
+ async getAccountNames() {
+  return await this.accountRepository.find({
+    select: ['name']
+  });
+ }
 }
