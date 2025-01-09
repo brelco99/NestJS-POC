@@ -1,5 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
+// ~Migrations
 export class AddAccountTable1735925145613 implements MigrationInterface {
     name = 'AddAccountTable1735925145613'
 
