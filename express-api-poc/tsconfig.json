@@ -5,6 +5,7 @@
         "emitDecoratorMetadata": true, 
         "experimentalDecorators": true, 
         "esModuleInterop": true, 
-        "outDir": "./dist" 
+        "outDir": "./dist",
+        "typeRoots": ["./types", "./node_modules/@types"] 
         } 
     }

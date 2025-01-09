@@ -10,10 +10,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   console.log('Available routes:', app.getHttpServer()._events.request._router.stack
-.filter(layer => layer.route)
-.map(layer=> layer.route?.path));
+    .filter(layer => layer.route)
+    .map(layer => layer.route?.path));
   // Global validation pipe
-  app.useGlobalPipes(new ValidationPipe({ 
+  app.useGlobalPipes(new ValidationPipe({
     transform: true,
     whitelist: true,
     forbidNonWhitelisted: true,
@@ -22,21 +22,29 @@ async function bootstrap() {
 
   // Global error handling
   app.useGlobalFilters(new GlobalExceptionFilter());
-  
+
   // Timeout interceptor
   app.useGlobalInterceptors(new TimeoutInterceptor());
 
   const config = new DocumentBuilder()
-    .setTitle('Account Service API')
+    .setTitle('Accounts API')
     .setDescription('API documentation for the Account Service')
     .setVersion('1.0')
     .addTag('Accounts')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT'
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const accountController = app.get(AccountController); 
+  const accountController = app.get(AccountController);
   await app.listen(3000);
 }
 bootstrap();
