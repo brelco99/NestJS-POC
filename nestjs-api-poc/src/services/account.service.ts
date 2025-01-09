@@ -57,6 +57,7 @@ export class AccountService {
   }
 
 
+  // ~Pagination- adding to service func
   async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
 

@@ -48,6 +48,7 @@ export class AccountController {
     return await this.accountService.findByAccountId(accountId);
   }
 
+  // ~Paginated endpoint
   @Get()
   @ApiOperation({ summary: 'Get a paginated list of accounts' })
   async getAccounts(@Query() paginationDto: PaginationDto) {

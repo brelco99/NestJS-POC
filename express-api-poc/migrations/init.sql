@@ -1,3 +1,4 @@
+-- // ~Migrations- initialize table
 CREATE TABLE account (
  account_id SERIAL PRIMARY KEY,
  firestore_id VARCHAR(255) NOT NULL,

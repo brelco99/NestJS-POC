@@ -7,6 +7,7 @@ interface AuthRequest extends Request {
 
 const SECRET_KEY = 'your-secret-key';
 
+// ~Authentication with token
 export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
   const token = req.headers['authorization']?.split(' ')[1];
 
@@ -28,7 +29,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   });
 };
 
-// Role-based authorization middleware
+// ~Authorization- role-based authorization middleware
 export const authorize = (requiredRole: string) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (req.user?.role !== requiredRole) {

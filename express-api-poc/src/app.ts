@@ -28,7 +28,7 @@ const pool = new Pool({
 
 
 
-// Swagger setup
+// ~Swagger options (more built-in with Nest)
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -52,6 +52,7 @@ const swaggerOptions = {
   apis: ['./src/app.ts'],
 };
 
+// ~Swagger setup
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
@@ -101,7 +102,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 *             example:
 *               error: "Error message"
 */
-app.post('/accounts', authenticateToken, authorize('admin'), async (req: Request, res: Response) => {
+app.post('/accounts', authenticateToken, authorize('admin'), async (req: Request, res: Response) => { // ~Authorization- example of successful admin creds
   try {
     const { firestoreId, name } = req.body;
     const result = await pool.query(
@@ -141,7 +142,7 @@ app.post('/accounts', authenticateToken, authorize('admin'), async (req: Request
 *               }
 *             ]
 */
-app.get('/accounts', authenticateToken, authorize('someone'), async (req: Request, res: Response) => { // NON ADMIN ROLE
+app.get('/accounts', authenticateToken, authorize('someone'), async (req: Request, res: Response) => { // ~Authorization- example of non admin creds failing
   try {
     const result = await pool.query('SELECT * FROM account');
     console.log('Request body:', req.body);
@@ -237,6 +238,7 @@ const users = {
 };
 
 
+// ~Authorization- login endpoint
 /**
  * @swagger
  * /accounts:

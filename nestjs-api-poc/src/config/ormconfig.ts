@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Account } from '../entities/account.entity';
 
+// ~Database config
 const AppDataSource = new DataSource({
  type: 'postgres',
  host: 'localhost',

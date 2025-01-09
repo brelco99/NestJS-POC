@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private jwtService: JwtService) { }
 
+  // ~Authorization- role-based authorization
   async login(username: string, password: string) {
     if (username === 'admin' && password === 'admin123') {
       const payload = {

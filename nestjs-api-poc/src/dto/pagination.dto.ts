@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Min } from 'class-validator';
 
+// ~Pagination setup
 export class PaginationDto {
   @ApiProperty({ example: 1, description: 'Page number (starts from 1)', required: false })
   @IsOptional()
